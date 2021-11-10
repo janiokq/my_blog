@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{% block title %}{{ title }}{% endblock %}</title>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="{{title}}{{seo}}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="https://janiokq-1258515721.cos.ap-guangzhou.myqcloud.com/icon.ico">
+    <link href="https://janiokq-1258515721.cos.ap-guangzhou.myqcloud.com/base.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.2.0/build/highlight.min.js"></script>
+    {% block head %}{% endblock %}
+  </head>
+</head>
+<body>
+<div id="content">
+
+  <header class="main-header" id="mainHeader">
+    <div class="AppbarContainer" >
+      <nav class="appbarNav">
+        <ul class="nav-list">
+          <li>
+            <a href="/blog">Blog</a>
+          </li>
+          <li>
+            <a href="/life">Life</a>
+          </li>
+          <li>
+            <a href="/tool" class="titleActivation"  >Tool</a>
+          </li>
+          <li>
+            <a href="/about" >About</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="view-container aboutbox" >
+      <div class="ArticleContentBody" >
+        {{content|safe}}
+      </div>
+  </div>
+
+</div>
+</body>
+<script type="text/javascript" >
+  hljs.highlightAll();
+</script>
+</html>

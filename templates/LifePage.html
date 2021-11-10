@@ -1,0 +1,27 @@
+ {% for item in article %}
+        <div class="life-item">
+          <div class="time_line_point" ></div>
+          {% let odd -%}
+          {% if item.odd_number == true -%}
+          {% let odd = "time_item_box_left" -%}
+          {% else -%}
+          {% let odd = "time_item_box_right" -%}
+          {% endif -%}
+          <div class="time_item_box {{odd}}">
+            <a  href="/article/{{item.id}}" target="_blank">
+            <div class="time_item_image_header">
+              {% if item.cover_pic != "" %}
+              <img src="{{ item.cover_pic  }}" alt="{{ item.title }}"  />
+              {% endif %}
+              {% if item.cover_pic == "" %}
+                <h3  class="nopic" >{{item.title}}</h3>
+              {% else -%}
+                <h3 >{{item.title}}</h3>
+              {% endif -%}
+            </div>
+            <div class="time_item_date">{{item.update_time}}</div>
+            <p>{{item.describe}}</p>
+            </a>
+          </div>
+        </div>
+    {% endfor %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+</style>
+{% endblock %}
+
+{% block content %}
+
+<ul class="article_lists">
+{% for article in article_lists %}
+
+
+        <li >
+            <article class="articleItem">
+            <div class="tagsbox">
+                {% for tag in article.tags %}
+                <a href="/blog?tag={{tag.name}}&keyword={{search_key}}" >{{tag.name}}</a>
+                {% endfor %}
+            </div>
+            <a href="/article/{{article.id}}" target="_blank" >
+                <div class="article_box">
+                <div class="article_content" >
+                    <p class="article_title" >{{ article.title  }}</p>
+                    <p class="article_dec">{{ article.describe  }}</p>
+                    <p class="article_time">{{ article.create_time  }}</p>
+                </div>
+                {% if article.cover_pic != "" %}
+                    <img src="{{ article.cover_pic  }}" alt="{{ article.title  }}" class="cover_pic" >
+                {% endif %}
+                </div>
+            </a>
+            </article>
+        </li>
+
+
+{% endfor %}
+</ul>
+
+
+<div class="paging" >
+
+    {% if previous != ""  -%}
+    <a class="pagingbefore"  href="/blog?page={{previous}}&tag={{tag}}&keyword={{search_key}}" >pre</a>
+    {% else -%}
+    <a class="pagingbefore disable_click"  >pre</a>
+    {% endif -%}
+
+    <ul class="paging-list" >
+        {% for page_item in page_list %}
+                {% if page_item.to_string() == page -%}
+                        <li class="active_page" >{{page_item}}</li>
+                {% else -%}
+                        <li  ><a href='/blog?page={{page_item}}&tag={{tag}}&keyword={{search_key}}' >{{page_item}}</a></li>
+                {% endif -%}
+        {% endfor %}
+    </ul>
+
+    {% if next != ""  -%}
+    <a class="pagingnext " href="/blog?page={{next}}&tag={{tag}}&keyword={{search_key}}"  >next</a>
+    {% else -%}
+    <a class="pagingnext disable_click"  >next</a>
+    {% endif -%}
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{% block title %}{{ title }}{% endblock %}</title>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="{{seo}}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="https://janiokq-1258515721.cos.ap-guangzhou.myqcloud.com/icon.ico">
+    <link href="https://janiokq-1258515721.cos.ap-guangzhou.myqcloud.com/base.min.css" rel="stylesheet" />
+    {% block head %}{% endblock %}
+  </head>
+</head>
+<body>
+<div id="content">
+
+  <header class="main-header" id="mainHeader">
+    <div class="AppbarContainer" >
+      <nav class="appbarNav">
+        <ul class="nav-list">
+          <li>
+            <a href="/blog" class="titleActivation" >Blog</a>
+          </li>
+          <li>
+            <a href="/life">Life</a>
+          </li>
+          <li>
+            <a href="/tool">Tool</a>
+          </li>
+          <li>
+            <a href="/about">About</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+
+  <div class="view-container" >
+
+    <div class="entry-list-container">
+      {% block content %}{% endblock %}
+    </div>
+    <div class="entry-sidebar">
+
+      <div class="searchbox">
+        <input type="search" maxlength="32" placeholder="search" value="{{search_key}}" id="searchinput" class="search-input"
+               onkeydown="if(event.keyCode==13) {
+                 window.location.href = '/blog?tag={{tag}}&keyword='+document.getElementById('searchinput').value
+               }"
+        >
+      </div>
+
+      <div class="showTags">
+        <span class="friendshipLinktitle" style="margin-bottom: 10px">Tags</span>
+        {% if tag == "" -%}
+        <a class="tagsitem tagsitemSelect" href="/blog?keyword={{search_key}}"  >All</a>
+        {% else -%}
+        <a class="tagsitem"  href="/blog?keyword={{search_key}}" >All</a>
+        {% endif -%}
+
+        {% for tagitem in tags %}
+          {% if tagitem.select == true -%}
+          <a class="tagsitem tagsitemSelect" href="/blog?tag={{tagitem.name}}&keyword={{search_key}}"  >{{tagitem.name}}</a>
+          {% else -%}
+          <a class="tagsitem "  href="/blog?tag={{tagitem.name}}&keyword={{search_key}}" >{{tagitem.name}}</a>
+          {% endif -%}
+        {% endfor %}
+      </div>
+
+
+      {% if link.len() > 0 -%}
+
+        <div class="friendshipLink">
+          <span class="friendshipLinktitle" >Links</span>
+          {% for linkitem in link %}
+          <a class="linkitem"  href="{{linkitem.url}}" target="_blank" >{{linkitem.name}}</a>
+          {% endfor %}
+        </div>
+
+      {% endif -%}
+
+
+      <div class="CopyrightInformation">
+        <span class="friendshipLinktitle">Copyright</span>
+        {{copyright|safe}}
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</body>
+<script type="text/javascript" >
+
+</script>
+</html>

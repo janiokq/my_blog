@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{% block title %}{{ title }}{% endblock %}</title>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="{{seo}}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="https://janiokq-1258515721.cos.ap-guangzhou.myqcloud.com/icon.ico">
+    <link href="https://janiokq-1258515721.cos.ap-guangzhou.myqcloud.com/base.min.css" rel="stylesheet" />
+    <script src='https://cdn.jsdelivr.net/scrollreveal.js/3.3.1/scrollreveal.min.js'></script>
+    {% block head %}{% endblock %}
+  </head>
+</head>
+<body>
+<div id="content">
+  <header class="main-header" id="mainHeader">
+    <div class="AppbarContainer" >
+      <nav class="appbarNav">
+        <ul class="nav-list">
+          <li>
+            <a href="/blog"  >Blog</a>
+          </li>
+          <li>
+            <a href="/life" class="titleActivation" >Life</a>
+          </li>
+          <li>
+            <a href="/tool">Tool</a>
+          </li>
+          <li>
+            <a href="/about">About</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="view-container life-container" >
+    <div class="life-ackground-line"></div>
+    {% for item in article %}
+        <div class="life-item">
+          <div class="time_line_point" ></div>
+          {% let odd -%}
+          {% if item.odd_number == true -%}
+          {% let odd = "time_item_box_left" -%}
+          {% else -%}
+          {% let odd = "time_item_box_right" -%}
+          {% endif -%}
+
+          <div class="time_item_box {{odd}}">
+            <a  href="/article/{{item.id}}" target="_blank">
+            <div class="time_item_image_header">
+              {% if item.cover_pic != "" %}
+              <img src="{{ item.cover_pic  }}" alt="{{ item.title }}"  />
+              {% endif %}
+              {% if item.cover_pic == "" %}
+                <h3  class="nopic" >{{item.title}}</h3>
+              {% else -%}
+                <h3 >{{item.title}}</h3>
+              {% endif -%}
+            </div>
+            <div class="time_item_date">{{item.update_time}}</div>
+            <p>{{item.describe}}</p>
+            </a>
+          </div>
+
+        </div>
+    {% endfor %}
+  </div>
+
+
+
+
+</div>
+</body>
+<script type="text/javascript" >
+  function ajax(opt) {
+    opt = opt || {};
+    opt.method = opt.method.toUpperCase() || 'POST';
+    opt.url = opt.url || '';
+    opt.async = opt.async || true;
+    opt.data = opt.data || null;
+    opt.success = opt.success || function () {
+    };
+    var xmlHttp = null;
+    if (XMLHttpRequest) {
+      xmlHttp = new XMLHttpRequest();
+    } else {
+      xmlHttp = new ActiveXObject('Microsoft.XMLHTTP');
+    }
+    var params = [];
+    for (var key in opt.data) {
+      params.push(key + '=' + opt.data[key]);
+    }
+    var postData = params.join('&');
+    if (opt.method.toUpperCase() === 'POST') {
+      xmlHttp.open(opt.method, opt.url, opt.async);
+      xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=utf-8');
+      xmlHttp.send(postData);
+    } else if (opt.method.toUpperCase() === 'GET') {
+      xmlHttp.open(opt.method, opt.url + '?' + postData, opt.async);
+      xmlHttp.send(null);
+    }
+    xmlHttp.onreadystatechange = function () {
+      if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+        opt.success(xmlHttp.responseText);
+      }
+    };
+  }
+  var  count = {{count}};
+  var  page = 2;
+
+
+  window.addEventListener("resize", function (){
+    document.getElementsByClassName("life-ackground-line")[0].style = 'height:'+(document.body.scrollHeight)+"px";
+  })
+  var load = false;
+  window.onscroll = function (){
+    var top = window.pageYOffset || document.documentElement.scrollTop|| document.body.scrollTop || 0;
+
+    var win = document.documentElement.clientHeight;
+    var doc = document.body.scrollHeight;
+
+    if ( (top+win) >= (doc-100) &&  !load  ) {
+      load = true;
+      var renderitem =  document.getElementsByClassName("life-item").length;
+      if(renderitem < count){
+        ajax({
+          method: 'GET',
+          url: '/life_page/'+page,
+          success: function (OriginalFromActivity) {
+
+            setTimeout(function(){
+              page++;
+              document.getElementsByClassName("life-container")[0].innerHTML += OriginalFromActivity;
+              load = false;
+              window.sr.sync();
+              setTimeout(function (){
+                document.getElementsByClassName("life-ackground-line")[0].style = 'height:'+(document.body.scrollHeight+200)+"px";
+              },100)
+            },1000);
+
+
+          }
+        })
+      }
+    }
+  }
+
+  window.onload = function () {
+    // document.getElementById('mainHeader').style = 'top:0px';
+    document.getElementsByClassName("life-ackground-line")[0].style = 'height:'+(document.body.scrollHeight+100)+"px";
+    window.sr = ScrollReveal();
+    sr.reveal('.time_item_box_left', {
+      origin: 'left',
+      distance: '300px',
+      easing: 'ease-in-out',
+      duration: 800,
+    });
+    sr.reveal('.time_item_box_right', {
+      origin: 'right',
+      distance: '300px',
+      easing: 'ease-in-out',
+      duration: 800,
+    });
+
+  }
+
+
+</script>
+</html>
