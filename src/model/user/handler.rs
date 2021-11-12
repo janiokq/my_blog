@@ -24,7 +24,7 @@ pub async fn save_user(user:&User) -> Result<String>{
 pub async fn update_user_info(user:&User) -> Result<u64> {
     super::update(User::TABLE_NAME,&user._id.unwrap().to_string(),user.to_document().unwrap()).await
 }
-
+//
 // mod test {
 //     use super::*;
 //     #[tokio::test]
@@ -37,7 +37,7 @@ pub async fn update_user_info(user:&User) -> Result<u64> {
 //     #[tokio::test]
 //     async fn test_insert_user() {
 //         let mut u  = User::new();
-//         u.name= Some("测试".to_string());
+//         u.name= Some("张峰".to_string());
 //         u.phone = Some(15173135646);
 //         u.password = Some("".to_string());
 //         let mut  v =  save_user(&u).await;

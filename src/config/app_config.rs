@@ -25,6 +25,8 @@ pub struct JWTConf {
 pub struct MongoConf {
     pub ip: String,
     pub port: u16,
+    pub username: String,
+    pub password: String,
     pub db_name: String,
 }
 

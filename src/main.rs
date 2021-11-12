@@ -15,10 +15,11 @@ use lazy_static::lazy_static;
 use mongodb::{options::ClientOptions, options::ServerAddress, Client as MongoClient};
 use crate::router::{route_info};
 use axum::{Router};
+use mongodb::options::Credential;
 
 lazy_static! {
-    pub static ref GLOBAL_CONF: AppConf = AppConf::new("/Users/weeget/dev/rust/my_blog/config/app.toml");
-    // pub static ref GLOBAL_CONF: AppConf = AppConf::new("./app.toml");
+    // pub static ref GLOBAL_CONF: AppConf = AppConf::new("/Users/weeget/dev/rust/my_blog/config/app.toml");
+    pub static ref GLOBAL_CONF: AppConf = AppConf::new("./app.toml");
     pub static ref MONGO: MongoClient =  {
         let mut options = ClientOptions::default();
         options.hosts = vec![
@@ -27,12 +28,18 @@ lazy_static! {
                           port: Some(GLOBAL_CONF.mongo.port),
                       }
                   ];
+        let mut  credential  = Credential::default();
+        credential.username = Some(GLOBAL_CONF.mongo.username.to_string());
+        credential.password = Some(GLOBAL_CONF.mongo.password.to_string());
+        options.credential = Some(credential);
         MongoClient::with_options(options).expect("Failed to initialize standalone client.")
     };
 }
 
 #[tokio::main]
 async fn main() {
+
+    // Credential::default().username
     if std::env::var("RUST_LOG").is_err() {
         std::env::set_var("RUST_LOG", "static_file_server=debug,tower_http=debug")
     }
