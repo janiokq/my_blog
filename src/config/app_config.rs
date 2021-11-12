@@ -31,9 +31,12 @@ pub struct MongoConf {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ServerConf {
     pub port: Option<u16>,
-    pub page_url: Option<String>,
-    pub server_url: Option<String>,
+    pub https_port: Option<u16>,
+    pub use_https: Option<u16>,
+    pub domain_name: Option<String>,
     pub web_path: Option<String>, // 静态资源路径
+    pub private_key_file: Option<String>,
+    pub certificate_file: Option<String>,
 }
 
 impl AppConf {
