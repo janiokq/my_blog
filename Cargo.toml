@@ -8,7 +8,11 @@ debug = 0
 incremental = true
 
 [profile.release]
-
+incremental = true
+lto = true
+codegen-units = 1
+panic = "abort"
+opt-level = "s"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

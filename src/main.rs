@@ -18,7 +18,8 @@ use axum::{Router};
 use mongodb::options::Credential;
 
 lazy_static! {
-    pub static ref GLOBAL_CONF: AppConf = AppConf::new("/Users/weeget/dev/rust/my_blog/config/app.toml");
+    // pub static ref GLOBAL_CONF: AppConf = AppConf::new("/Users/weeget/dev/rust/my_blog/config/app.toml");
+    pub static ref GLOBAL_CONF: AppConf = AppConf::new("./app.toml");
     pub static ref MONGO: MongoClient =  {
         let mut options = ClientOptions::default();
         options.hosts = vec![
