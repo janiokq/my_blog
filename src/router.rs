@@ -1,9 +1,11 @@
 use std::convert::Infallible;
-use axum::handler::{get, Handler,post};
+use axum::handler::Handler;
+use axum::routing::{
+    get, post,get_service
+};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use axum::{Router, service};
-use axum::routing::BoxRoute;
+use axum::{Router};
 use crate::controller::user;
 use crate::controller::tag;
 use crate::controller::article;
@@ -12,7 +14,7 @@ use crate::controller::render;
 use tower_http::{services::ServeDir};
 use crate::middleware::cors::CorsLayer;
 use crate::{ GLOBAL_CONF};
-pub fn route_info() -> Router<BoxRoute> {
+pub fn route_info() -> Router {
 
     Router::new()
             .nest("/user", user(), )
@@ -22,23 +24,22 @@ pub fn route_info() -> Router<BoxRoute> {
             .nest("/", render_view(), )
             .nest(
                 "/static",
-                service::get(ServeDir::new(GLOBAL_CONF.server.web_path.as_ref().unwrap() )).handle_error(|error: std::io::Error| {
+                get_service(ServeDir::new(GLOBAL_CONF.server.web_path.as_ref().unwrap() )).handle_error(|error: std::io::Error| async move{
                     Ok::<_, Infallible>((
                         StatusCode::INTERNAL_SERVER_ERROR,
                         format!("Unhandled internal error: {}", error),
                     ))
                 }),
             )
-        .or(handler_404.into_service())
+        .fallback(handler_404.into_service())
         .layer(CorsLayer{})
-        .boxed()
 
 }
 
 
 
 
-pub fn render_view() -> Router<BoxRoute> {
+pub fn render_view() -> Router {
     Router::new().
         route("/", get(render::blog))
         .route("/blog", get(render::blog))
@@ -47,39 +48,35 @@ pub fn render_view() -> Router<BoxRoute> {
         .route("/about", get(render::about))
         .route("/tool", get(render::tool))
         .route("/article/:id", get(render::article_detail))
-        .boxed()
+        
 }
 
-pub fn user() -> Router<BoxRoute> {
+pub fn user() -> Router {
     Router::new().
         route("/login", post(user::login)).
         route("/updateUser", post(user::update_user)).
         route("/cosKey", post(user::cos_key)).
         route("/test", post(user::test))
-        .boxed()
 }
 
-pub fn setting() -> Router<BoxRoute> {
+pub fn setting() -> Router {
     Router::new()
         .route("/get", post(copyright::get_copyright))
         .route("/save", post(copyright::save_copyright_content))
-        .boxed()
 }
-pub fn article() -> Router<BoxRoute> {
+pub fn article() -> Router {
     Router::new()
         .route("/setArticle", post(article::set_article))
         .route("/searchArticle", post(article::search_article))
         .route("/findArticle", post(article::find_article))
         .route("/delArticle", post(article::del_article))
-        .boxed()
 }
-pub fn tag() -> Router<BoxRoute> {
+pub fn tag() -> Router {
     Router::new()
         .route("/getAllTags", get(tag::list_tags))
         .route("/add",post(tag::add_tag))
         .route("/remove", post(tag::del_tag))
         .route("/search", post(tag::search_tag))
-        .boxed()
 }
 
 async fn handler_404() -> impl IntoResponse {

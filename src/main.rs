@@ -7,9 +7,10 @@ mod controller;
 mod router;
 
 use std::net::SocketAddr;
-use axum::handler::get;
+use axum::routing::get;
 use axum::http::Uri;
 use axum::response::Redirect;
+use axum_server::tls_rustls::RustlsConfig;
 use config::AppConf;
 use lazy_static::lazy_static;
 use mongodb::{options::ClientOptions, options::ServerAddress, Client as MongoClient};
@@ -18,8 +19,8 @@ use axum::{Router};
 use mongodb::options::Credential;
 
 lazy_static! {
-    // pub static ref GLOBAL_CONF: AppConf = AppConf::new("/Users/weeget/dev/rust/my_blog/config/app.toml");
-    pub static ref GLOBAL_CONF: AppConf = AppConf::new("./app.toml");
+    pub static ref GLOBAL_CONF: AppConf = AppConf::new("/Users/jan/dev/rust/my_blog/config/app.toml");
+    // pub static ref GLOBAL_CONF: AppConf = AppConf::new("./app.toml");
     pub static ref MONGO: MongoClient =  {
         let mut options = ClientOptions::default();
         options.hosts = vec![
@@ -64,12 +65,12 @@ async fn http_server(usehttps: bool) {
     if usehttps {
         let app = Router::new().route("/", get(http_handler));
         axum_server::bind(addr)
-            .serve(app)
+            .serve(app.into_make_service())
             .await
             .unwrap();
     }else {
         axum_server::bind(addr)
-            .serve(route_info())
+            .serve(route_info().into_make_service())
             .await
             .unwrap();
     }
@@ -78,21 +79,25 @@ async fn http_server(usehttps: bool) {
 async fn http_handler(uri: Uri) -> Redirect {
     let port = GLOBAL_CONF.server.https_port.unwrap_or(80u16);
     let domain_name = GLOBAL_CONF.server.domain_name.as_ref().unwrap();
-    let uri = format!("https://{}:{}{}", domain_name, port, uri.path())
-        .try_into()
-        .unwrap();
+    let uri = format!("https://{}:{}{}", domain_name, port, uri.path());
 
-    Redirect::found(uri)
+    Redirect::to(&uri)
 }
 
 async fn https_server(private_key_file: String, certificate_file: String) {
     let port = GLOBAL_CONF.server.https_port.unwrap_or(443u16);
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     println!("https listening on {}", addr);
-    axum_server::bind_rustls(addr.clone().to_string())
-        .private_key_file(private_key_file)
-        .certificate_file(certificate_file)
-        .serve(route_info())
+
+    let config = RustlsConfig::from_pem_file(
+        certificate_file,
+        private_key_file,
+    )
+    .await
+    .unwrap();
+    
+    axum_server::bind_rustls(addr,config)
+        .serve(route_info().into_make_service())
         .await
         .unwrap();
 }

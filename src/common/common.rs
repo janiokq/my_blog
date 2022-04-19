@@ -10,7 +10,9 @@ use std::convert::Infallible;
 use axum::{response::IntoResponse, response};
 use axum::body::{Bytes, Full};
 use axum::http::header::ToStrError;
-use axum::http::{Response, StatusCode};
+use axum::response::Response;
+use axum::http::{StatusCode};
+
 use crate::template::{ArticleListRenderItem, ArticleRenderTag};
 use crate::model::article::Article;
 use chrono::{NaiveDateTime, DateTime, Utc};
@@ -80,13 +82,12 @@ impl<T> IntoResponse for Resp<T>
     where
         T: Send + Sync + Serialize,
 {
-    type Body = Full<Bytes>;
-    type BodyError = Infallible;
-
-    fn into_response(self) -> Response<Self::Body> {
+    // type Body = Full<Bytes>;
+    // type BodyError = Infallible;
+    
+    fn into_response(self) -> Response {
         let mut respon = response::Json(self.into_json())
             .into_response();
-
         *respon.status_mut() = StatusCode::OK;
         respon
     }
@@ -135,10 +136,10 @@ impl From<ToStrError>  for BaseError {
 
 
 impl IntoResponse for BaseError {
-    type Body = Full<Bytes>;
-    type BodyError = Infallible;
+    // type Body = Full<Bytes>;
+    // type BodyError = Infallible;
 
-    fn into_response(self) -> Response<Self::Body> {
+    fn into_response(self) -> Response {
         let code = match self {
             BaseError::ValidationError { field: _, } => StatusCode::OK,
             BaseError::LoginAuthFailedError => StatusCode::OK,

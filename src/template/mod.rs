@@ -1,8 +1,8 @@
 use askama::Template;
 use axum::{response::IntoResponse, response};
-use std::{convert::Infallible};
-use axum::body::{Bytes, Full};
-use axum::http::{Response, StatusCode};
+use axum::body::{Full};
+use axum::response::{Html,Response};
+use axum::http::{StatusCode};
 
 pub struct ArticleRenderTag {
     pub id: String,
@@ -105,18 +105,17 @@ impl<T> IntoResponse for HtmlTemplate<T>
     where
         T: Template,
 {
-    type Body = Full<Bytes>;
-    type BodyError = Infallible;
-    fn into_response(self) -> Response<Self::Body> {
+    // type Body = Full<Bytes>;
+    // type BodyError = Infallible;
+
+    fn into_response(self) -> Response {
         match self.template.render() {
-            Ok(html) => response::Html(html).into_response(),
-            Err(err) => Response::builder()
-                .status(StatusCode::INTERNAL_SERVER_ERROR)
-                .body(Full::from(format!(
-                    "Failed to render template. Error: {}",
-                    err
-                )))
-                .unwrap(),
+            Ok(html) => Html(html).into_response(),
+            Err(err) => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to render template. Error: {}", err),
+            )
+                .into_response()  ,
         }
     }
 }

@@ -15,7 +15,7 @@ impl<B> FromRequest<B> for BlogAuth
 {
     type Rejection = WebError;
     async fn from_request(request: &mut RequestParts<B>) -> Result<Self, Self::Rejection> {
-        let header =  request.headers().unwrap();
+        let header =  request.headers();
         match  header.get(HTTP_TOKEN_KEY){
             Some(d)=>{
                 match d.to_str(){
