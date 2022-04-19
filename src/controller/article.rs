@@ -13,8 +13,14 @@ pub async fn set_article(auth: BlogAuth, Json(new_article_info): Json<Article>) 
     new_art.title = new_article_info.title;
     new_art.describe = new_article_info.describe;
     new_art.tags = new_article_info.tags;
+    match new_article_info.create_time {
+        Some(time)=>{
+            new_art.create_time  = Some(time);
+        },
+        None=>{
+        }
+    } 
     // newArt.id = newArticleInfo.id;
-
     match new_article_info.id {
         Some(_) => {
             //更新
