@@ -3,7 +3,7 @@ pub mod article;
 pub mod tag;
 pub mod copyright;
 use anyhow::Result;
-use crate::common::{table, IntoDocument,WebError};
+use crate::common::{table, IntoDocument,WebError,BaseError};
 use std::str::FromStr;
 use futures_util::TryStreamExt;
 use mongodb::{options::FindOptions,bson,bson::oid::ObjectId,bson::*,bson::Document};
@@ -16,7 +16,14 @@ where
 {
     let filter = Some(doc!{"_id": ObjectId::from_str(id)?} );
     let document = table(table_name).find_one(filter, None).await?;
-    Ok(bson::from_document( document.unwrap() )?)
+    match document {
+        Some(doc)=> {
+            Ok(bson::from_document( doc )?)
+        },
+        None=> {
+            Err(BaseError::NoRecordFound.into())
+        }
+    }
 }
 // 查找对应的数据
 pub async fn find<T>(table_name: &str, filter: Option<Document>) -> Result<T>
