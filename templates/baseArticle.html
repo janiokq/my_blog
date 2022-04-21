@@ -102,5 +102,22 @@
       avatar: 'monsterid',
       uploadImage:false,
     });
+    window.onload = function(){
+      var padding=[0,5,10,15,20];//Generated directory
+      var directory = '<div style="left: 10px;max-width: 200px;background: white;border-radius: 6px;padding: 5px;font-size: 0.9rem;margin-top: 10px;" >';
+      var nodes = document.getElementsByClassName("ArticleContentBody")[0].querySelectorAll('h1,h2,h3,h4,h5');
+      for(index=0;index<nodes.length;index++){
+          var value = nodes[index];
+          tag = '<a name="c'+index+'"></a>';
+          value.insertAdjacentHTML('beforebegin', tag);
+          var tagName=value.tagName.toLowerCase();
+          var tagIndex=parseInt(tagName.charAt(1))-1;//
+          directory+='<a href="#c'+index+'" style="padding-left:'+padding[tagIndex]+'px;display: block;color: #000000;text-decoration: none !important;overflow: hidden;height: 1.5rem;line-height: 1.5rem;">'+value.innerHTML+'</a>';
+      }
+      directory+="</div>";
+      if(nodes.length>0){
+        document.getElementsByClassName("relatedRecommend")[0].insertAdjacentHTML('afterend',directory);
+      }
+    }
 </script>
 </html>
